@@ -1,0 +1,13 @@
+ros_ws/devel
+ros_ws/build
+.catkin_workspace
+__pycache__
+logs
+weights
+*.jpg
+cache
+.vscode
+models
+/ros_ws/src/CMakeLists.txt
+*.pyc
+*.pkl

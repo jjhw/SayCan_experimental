@@ -1,0 +1,9 @@
+[submodule "ros_ws/src/Universal_Robots_ROS_Driver"]
+	path = ros_ws/src/Universal_Robots_ROS_Driver
+	url = https://github.com/UniversalRobots/Universal_Robots_ROS_Driver.git
+[submodule "ros_ws/src/universal_robot"]
+	path = ros_ws/src/universal_robot
+	url = https://github.com/ros-industrial/universal_robot.git
+[submodule "ros_ws/src/industrial_core"]
+	path = ros_ws/src/industrial_core
+	url = https://github.com/ros-industrial/industrial_core.git
