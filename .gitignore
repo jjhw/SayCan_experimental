@@ -11,3 +11,4 @@ models
 /ros_ws/src/CMakeLists.txt
 *.pyc
 *.pkl
+*.yaml
