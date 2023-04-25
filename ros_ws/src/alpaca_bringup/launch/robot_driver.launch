@@ -1,31 +1,29 @@
 <launch>
-    <!-- <arg name="debug" default="false" />
-    <arg name="db" default="false" />
-    <arg name="use_gui" default="false" />  -->
-    <!-- <arg name="use_rviz" default="true" /> -->
     <arg name="robot_description_file" default="$(find ur_description)/launch/load_ur5.launch"/>
     <arg name="robot_ip" default="192.168.0.105" />
     <arg name="reverse_port" default="50001" />
     <arg name="use_rviz" default="true"/>
+    <arg name="fake" default="false"/>
+    <arg name="use_gripper" default="true"/>
 
-    <!-- <arg name="pipeline" default="ompl" /> -->
 
-    <!-- Gripper -->
-
-    <!-- Kuka RSI interface -->
-    <!-- <include file="$(find kuka_rsi_hw_interface)/launch/kuka_rsi_main.launch"></include> -->
-
-    <!-- <include file="$(find ur_robot_driver)/launch/ur5_bringup.launch">
+    <include unless="$(arg fake)"
+        file="$(find ur_robot_driver)/launch/ur5_bringup.launch">
         <arg name="robot_description_file" value="$(arg robot_description_file)"/>
         <arg name="robot_ip" value="$(arg robot_ip)"/>
         <arg name="reverse_port" value="$(arg reverse_port)"/>
-    </include> -->
-
-    <!-- if fake_execution is true, then we will use fake controller -->
-    <include file="$(find alpaca_bringup)/launch/fake_robot.launch">
-        <arg name="use_gui" value="true"/>
-    </include>  
-    <include file="$(find ur5_moveit_config)/launch/move_group.launch">
+    </include>
+    <include unless="$(arg fake)"
+        file="$(find ur5_moveit_config)/launch/move_group.launch">
+        <arg name="allow_trajectory_execution" value="true"/>
+        <arg name="fake_execution" value="false"/>
+        <arg name="info" value="true"/>
+        <arg name="debug" value="False"/>
+        <arg name="pipeline" value="ompl"/>
+        <arg name="load_robot_description" value="true"/>
+    </include>
+    <include if="$(arg fake)"
+        file="$(find ur5_moveit_config)/launch/move_group.launch">
         <arg name="allow_trajectory_execution" value="true"/>
         <arg name="fake_execution" value="true"/>
         <arg name="info" value="true"/>
@@ -33,7 +31,15 @@
         <arg name="pipeline" value="ompl"/>
         <arg name="load_robot_description" value="true"/>
     </include>
-    <node if="$(arg use_rviz)"
-        name="rviz" pkg="rviz" type="rviz" respawn="false" output="screen" 
-        args="-d $(find ur_robot_driver)/resources/example_rviz_config.rviz" />
+
+    <include if="$(arg use_rviz)"
+        file="$(find ur5_moveit_config)/launch/moveit_rviz.launch" />
+    
+    <node if="$(arg use_gripper)"
+        name="wsg_50_driver"  pkg="wsg_50_driver" type="wsg_50_ip" output="screen">
+        <param name="ip" type="string" value="192.168.0.111"/>
+        <param name="port" type="int" value="1000"/>
+        <param name="protocol" type="string" value="tcp"/>
+        <param name="com_mode" type="string" value="polling"/>
+    </node>
 </launch>

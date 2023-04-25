@@ -7,3 +7,6 @@
 [submodule "ros_ws/src/industrial_core"]
 	path = ros_ws/src/industrial_core
 	url = https://github.com/ros-industrial/industrial_core.git
+[submodule "ros_ws/src/wsg50-ros-pkg"]
+	path = ros_ws/src/wsg50-ros-pkg
+	url = https://github.com/nalt/wsg50-ros-pkg.git

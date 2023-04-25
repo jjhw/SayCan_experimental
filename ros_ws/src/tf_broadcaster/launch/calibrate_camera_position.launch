@@ -1,20 +1,20 @@
 <launch>
-  <!--  launch realsense -->
-  <include file="$(find alpaca_bringup)/launch/realsense.launch" >
-    <arg name="output"              value="log"/>
-    <arg name="enable_depth"        value="false"/>
-    <arg name="color_width"         value="1280"/>
-    <arg name="color_height"        value="800"/>
-    <arg name="color_fps"           value="15"/>
-    <arg name="enable_color"        value="true"/>
-    <arg name="filters"             value=""/>
-    <arg name="enable_pointcloud"   value="false"/>
-  </include>
-  <include file="$(find alpaca_bringup)/launch/robot_driver.launch" >
-  </include>
-  <arg name="calib_path" default="/workspace/config/camera_pos.yaml"/> 
-  <node name="calibrate_camera_pos"  pkg="tf_broadcaster" type="calibrate_camera_pos.py" output="screen" >
+    <arg name="calib_path" default="/workspace/config/camera_pos.yaml"/> 
+    <include file="$(find alpaca_bringup)/launch/robot_driver.launch" >
+            <arg name="use_gripper" value="true"/>
+            <arg name="fake" value="false"/>
+    </include>
+    <!--  launch realsense -->
+    <include file="$(find alpaca_bringup)/launch/realsense.launch" >
+        <arg name="output"              value="log"/>
+        <arg name="enable_depth"        value="false"/>
+        <arg name="filters"             value=""/>
+        <arg name="enable_pointcloud"   value="false"/>
+    </include>
+
+    <node name="move_robot_node"  pkg="tf_broadcaster" type="move2calibrate.py" output="screen"/>
+    <node name="calibrate_camera_node"  pkg="tf_broadcaster" type="calibrate_camera_pos.py" output="screen" >
         <param name='calib_path' value='$(arg calib_path)'/>
-  </node>
+    </node>
 
 </launch>

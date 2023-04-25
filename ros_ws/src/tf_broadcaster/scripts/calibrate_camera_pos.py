@@ -103,7 +103,7 @@ class ArucoDetector:
         self.obj_points = generate_poses_list()
         # ROS TF stuff
         self.origin_tf_name = "base"
-        self.ee_tf_name = "tool0"
+        self.ee_tf_name = "tool0_controller"
         self.camera_tf_name = "aligned_depth_camera"
         self.tf_broadcaster = tf2_ros.TransformBroadcaster()
         self.tfBuffer = tf2_ros.Buffer()
@@ -172,7 +172,6 @@ class ArucoDetector:
             cv2.drawFrameAxes(color_img, self.cam_info['mtx'], self.cam_info['dst'],  rvec, tvec, 0.1)
             cv2.putText(color_img, "Cam pos: X={0:3.4f} Y={1:3.4f} Z={2:3.4f}" .format(*cam_pos), (5, 30), font, 2, (0, 255, 0), 2, cv2.LINE_AA)
             cv2.putText(color_img, "Cam ang: A={0:3.4f} B={1:3.4f} C={2:3.4f}" .format(*np.rad2deg(cam_ang)), (5, 60), font, 2, (0, 255, 0), 2, cv2.LINE_AA)
-
         else:
             rospy.logwarn_throttle_identical(2, "Non-compliance with the required number of static markers or camera info have been not received")
             cv2.putText(color_img, "Cam pos: not estimated", (5, 30), font, 2, (0, 255, 0), 2, cv2.LINE_AA)
