@@ -48,11 +48,11 @@ if __name__ == "__main__":
     stop = rospy.ServiceProxy("/ur_hardware_interface/dashboard/stop", Trigger)
     play = rospy.ServiceProxy("/ur_hardware_interface/dashboard/play", Trigger)
     stop()
-    sleep(5)
-    while True:
+    sleep(1)
+    while not rospy.is_shutdown():
         rospy.loginfo("waiting for robot to be ready...")
         play()
-        if not is_program_running().program_running:
+        if is_program_running().program_running:
             break
         sleep(1)
     move_group = moveit_commander.MoveGroupCommander("manipulator")
