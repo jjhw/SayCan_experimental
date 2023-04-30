@@ -14,7 +14,7 @@ from time import sleep
 import moveit_commander
 
 
-def move_robot(move_group, target=np.deg2rad([-140, -90, -140, 10, -330, 100])):
+def move_robot(move_group, target=np.deg2rad([0, -100, 140, -220, -100, -90])):
     # move robot to target joint position
     rospy.loginfo("robot current posX:\n" + str(move_group.get_current_pose()))
     rospy.loginfo(f"robot current posJ: {np.rad2deg(move_group.get_current_joint_values())} (deg)")

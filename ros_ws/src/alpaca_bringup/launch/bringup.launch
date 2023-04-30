@@ -1,0 +1,20 @@
+<launch>
+    <arg name="calib_path" default="/workspace/config/camera_pos.yaml"/> 
+    <include file="$(find alpaca_bringup)/launch/robot_driver.launch" >
+            <arg name="use_gripper" value="true"/>
+            <arg name="fake" value="false"/>
+            <arg name="use_rviz" value="true"/>
+            <arg name="rviz_config" value="$(find alpaca_bringup)/rviz/alpaca.rviz"/>
+    </include>
+    <!--  launch realsense -->
+    <include file="$(find alpaca_bringup)/launch/realsense.launch" >
+        <arg name="output"              value="log"/>
+        <arg name="enable_depth"        value="false"/>
+        <arg name="filters"             value=""/>
+        <arg name="enable_pointcloud"   value="false"/>
+    </include>
+
+    <node name="alpaca_control_node"  pkg="alpaca_bringup" type="alpaca_control_node.py" output="screen" respawn="true">
+        <param name="calib_path" type="string" value="$(arg calib_path)"/>
+    </node>
+</launch>

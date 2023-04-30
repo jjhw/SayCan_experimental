@@ -5,6 +5,7 @@
     <arg name="use_rviz" default="true"/>
     <arg name="fake" default="false"/>
     <arg name="use_gripper" default="true"/>
+    <arg name="rviz_config" default="$(find alpaca_bringup)/rviz/alpaca.rviz"/>
 
 
     <include unless="$(arg fake)"
@@ -14,7 +15,7 @@
         <arg name="reverse_port" value="$(arg reverse_port)"/>
     </include>
     <include unless="$(arg fake)"
-        file="$(find ur5_moveit_config)/launch/move_group.launch">
+        file="$(find alpaca_moveit_config)/launch/move_group.launch">
         <arg name="allow_trajectory_execution" value="true"/>
         <arg name="fake_execution" value="false"/>
         <arg name="info" value="true"/>
@@ -23,7 +24,7 @@
         <arg name="load_robot_description" value="true"/>
     </include>
     <include if="$(arg fake)"
-        file="$(find ur5_moveit_config)/launch/move_group.launch">
+        file="$(find alpaca_moveit_config)/launch/move_group.launch">
         <arg name="allow_trajectory_execution" value="true"/>
         <arg name="fake_execution" value="true"/>
         <arg name="info" value="true"/>
@@ -33,10 +34,10 @@
     </include>
 
     <include if="$(arg use_rviz)"
-        file="$(find ur5_moveit_config)/launch/moveit_rviz.launch" />
+        file="$(find alpaca_moveit_config)/launch/moveit_rviz.launch" />
     
     <node if="$(arg use_gripper)"
-        name="wsg_50_driver"  pkg="wsg_50_driver" type="wsg_50_ip" output="screen">
+        name="wsg_50_driver"  pkg="wsg_50_driver" type="wsg_50_ip" output="screen" respawn="true">
         <param name="ip" type="string" value="192.168.0.111"/>
         <param name="port" type="int" value="1000"/>
         <param name="protocol" type="string" value="tcp"/>

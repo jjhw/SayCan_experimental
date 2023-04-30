@@ -1,5 +1,5 @@
 geometry_msgs/Pose[] poses
 ---
-std_msgs/Float64 time
+std_msgs/Bool success
 ---
 std_msgs/Float64 progress

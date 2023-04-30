@@ -103,7 +103,8 @@ class ArucoDetector:
         self.obj_points = generate_poses_list()
         # ROS TF stuff
         self.origin_tf_name = "base"
-        self.ee_tf_name = "tool0_controller"
+        self.ee_tf_name = "wsg_50_center"
+        self.buffer_tf_name = "ee_to_aruco"
         self.camera_tf_name = "aligned_depth_camera"
         self.tf_broadcaster = tf2_ros.TransformBroadcaster()
         self.tfBuffer = tf2_ros.Buffer()
@@ -118,16 +119,24 @@ class ArucoDetector:
     def _get_tf(self, header: Header,
                 position: Tuple[float, float, float],
                 euler: Tuple[float, float, float]):
-        ee_cam_tf = TransformStamped()
-        ee_cam_tf.header.stamp = header.stamp
-        ee_cam_tf.header.frame_id = self.ee_tf_name
-        ee_cam_tf.child_frame_id = self.camera_tf_name
-        ee_cam_tf.transform.translation = Vector3(*position)
-        camera_ang = np.array(euler)
-        q = tf_conversions.transformations.quaternion_from_euler(*camera_ang)
-        ee_cam_tf.transform.rotation = Quaternion(*q)
+        buffer_tf = TransformStamped()
+        buffer_tf.header.stamp = header.stamp
+        buffer_tf.header.frame_id = self.ee_tf_name
+        buffer_tf.child_frame_id = self.buffer_tf_name
+        buffer_tf.transform.translation = Vector3(0, 0, 0)
+        q = tf_conversions.transformations.quaternion_from_euler(*np.array([0, np.pi, 0]))
+        buffer_tf.transform.rotation = Quaternion(*q)
+        self.tf_broadcaster.sendTransform(buffer_tf)
 
-        self.tf_broadcaster.sendTransform(ee_cam_tf)
+        ee_camera_tf = TransformStamped()
+        ee_camera_tf.header.stamp = header.stamp
+        ee_camera_tf.header.frame_id = self.buffer_tf_name
+        ee_camera_tf.child_frame_id = self.camera_tf_name
+        ee_camera_tf.transform.translation = Vector3(*position)
+        q = tf_conversions.transformations.quaternion_from_euler(*np.array(euler))
+        ee_camera_tf.transform.rotation = Quaternion(*q)
+        self.tf_broadcaster.sendTransform(ee_camera_tf)
+
         try:
             camera_pos = self.tfBuffer.lookup_transform(self.origin_tf_name, self.camera_tf_name, rospy.Time())
             return camera_pos.transform
