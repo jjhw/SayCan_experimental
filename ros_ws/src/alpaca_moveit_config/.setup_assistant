@@ -1,0 +1,11 @@
+moveit_setup_assistant_config:
+  URDF:
+    package: alpaca_moveit_config
+    relative_path: stand_model/alpaca_stand_description.xacro
+    xacro_args: ""
+  SRDF:
+    relative_path: config/alpaca_stand_description.srdf
+  CONFIG:
+    author_name: Felix Exner
+    author_email: felix@fexner.de
+    generated_timestamp: 1611154369

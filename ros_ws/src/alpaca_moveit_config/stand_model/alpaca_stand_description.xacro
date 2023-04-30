@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+<!--
+    This file contains the description of the Alpaca stand.
+    It is based on the UR5 robot model from the universal_robot package and
+    contains the following parts:
+        - UR5 robot
+        - flange adapter
+        - Weiss robotics WSG-50 gripper
+        - stand
+    Author: Yaroslav Savelev
+    Email: yar21sav@gmail.com
+    Date: 2023-03-28
+-->
+<robot xmlns:xacro="http://wiki.ros.org/xacro" name="alpaca_stand">
+    <!-- 
+        Parameters:
+        - kinematics_parameters_file: file with kinematics parameters for UR5 robot (see ur_description package)
+        - flange_length: lenge of flange adapter
+        - flange_radius: radius of flange adapter
+        - finger_length: length of gripper finger (from flange adapter to finger tip)
+        - finger_tip: length from finger tip to center of gripper
+        - stand_width: width of stand
+        - stand_length: length of stand
+        - stand_thickness: thickness of stand
+    -->
+    <xacro:property name="kinematics_parameters_file" value="./kinematics.yaml" />
+    <xacro:property name="flange_lengh" value="0.032" />
+    <xacro:property name="flange_radius" value="0.025" />
+    <xacro:property name="finger_length" value="0.133" />
+    <xacro:property name="finger_tip" value="0.055" />
+    <xacro:property name="stand_width" value="2" />
+    <xacro:property name="stand_length" value="2" />
+    <xacro:property name="stand_thickness" value="0.1" />
+
+    <!-- UR5 -->
+    <xacro:include filename="$(find ur_description)/urdf/inc/ur5_macro.xacro"/>
+    <xacro:ur5_robot prefix="" kinematics_parameters_file="${kinematics_parameters_file}"/>
+
+    <!-- flange adapter -->
+    <joint name="flange_adapter_joint" type="fixed">
+        <parent link="tool0"/>
+        <child link="flange_adapter_link"/>
+        <origin xyz="0.0 0.0 ${flange_lengh}" rpy="0.0 0.0 0.0"/>
+    </joint>
+    <link name="flange_adapter_link">
+        <visual>
+            <geometry>
+                <cylinder length="${flange_lengh}" radius="${flange_radius}"/>
+            </geometry>
+            <origin xyz="0 0.0 ${-flange_lengh / 2}" rpy="0.0 0.0 0.0"/>
+            <material name="white">
+                <color rgba="1 1 1 1"/>
+            </material>
+        </visual>
+        <collision>
+            <geometry>
+                <cylinder length="${flange_lengh}" radius="${flange_radius}"/>
+            </geometry>
+            <origin xyz="0.0 0.0 ${-flange_lengh / 2}" rpy="0.0 0.0 0.0"/>
+        </collision>
+    </link>
+
+    <!-- wsg_50 gripper -->
+    <xacro:include filename="$(find wsg_50_simulation)/urdf/wsg_50.urdf.xacro"/>    
+    <xacro:wsg_50_xacro parent="flange_adapter_link" finger_length="${finger_length}" finger_tip="${finger_tip}" name="wsg_50" >
+        <origin xyz="0 0 0" rpy="0 0 0" />
+    </xacro:wsg_50_xacro>
+
+    <!-- stand -->
+    <joint name="stand_joint" type="fixed">
+        <parent link="base_link"/>
+        <child link="stand_link"/>
+        <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+    </joint>
+    <link name="stand_link">
+        <visual>
+            <geometry>
+                <box size="${stand_width} ${stand_length} ${stand_thickness}"/>
+            </geometry>
+            <origin xyz="0 0 ${-stand_thickness / 2}" rpy="0 0 0"/>
+            <material name="white">
+                <color rgba="0.1 0.1 0.1 0.1"/>
+            </material>
+        </visual>
+        <collision>
+            <geometry>
+                <box size="${stand_width} ${stand_length} ${stand_thickness}"/>
+            </geometry>
+            <origin xyz="0 0 ${-stand_thickness / 2}" rpy="0 0 0"/>
+        </collision>
+    </link>
+</robot>
