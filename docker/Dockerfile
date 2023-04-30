@@ -137,7 +137,7 @@ RUN apt update && apt install -y libboost-system1.67.0 libboost-thread1.67.0 lib
                                 ros-noetic-industrial-msgs ros-noetic-industrial-robot-status-controller ros-noetic-force-torque-sensor-controller socat ros-noetic-twist-controller \
                                 ros-noetic-industrial-robot-status-interface ros-noetic-industrial-robot-simulator ros-noetic-velocity-controllers
 
-
+ENV PYTHONPATH "${PYTHONPATH}:/workspace/ros_ws/src/alpaca_connector/"
 RUN /bin/bash -c 'echo "source /opt/ros/noetic/setup.bash; source /workspace/ros_ws/devel/setup.bash --extend"  >> ~/.bashrc'
 WORKDIR /workspace
 ENTRYPOINT /bin/bash -c 'source /opt/ros/noetic/setup.bash && cd /workspace/ros_ws && catkin_make && source /workspace/ros_ws/devel/setup.bash --extend && cd .. && /bin/bash'
