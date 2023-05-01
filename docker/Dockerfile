@@ -1,4 +1,4 @@
-FROM nvidia/cuda:12.1.0-runtime-ubuntu20.04
+FROM nvidia/cuda:11.8.0-runtime-ubuntu20.04
 
 # Timezone Configuration
 ENV TZ=Europe/Moscow
@@ -33,7 +33,7 @@ RUN dpkg --add-architecture i386 && \
 
 ENV NVIDIA_VISIBLE_DEVICES all
 ENV NVIDIA_DRIVER_CAPABILITIES compute,utility
-ENV NVIDIA_REQUIRE_CUDA "cuda>=12.0"
+ENV NVIDIA_REQUIRE_CUDA "cuda>=11.0"
 
 
 RUN echo "/usr/local/nvidia/lib" >> /etc/ld.so.conf.d/nvidia.conf && \

@@ -50,7 +50,7 @@ except KeyError:
 openai.api_key = openai_api_key
 logger.info(f'using platform: {xla_bridge.get_backend().platform}')
 
-def dataset(load_pregenerated):
+def dataset_load(load_pregenerated):
 
     # Load pre-existing dataset.
     if load_pregenerated:
@@ -138,74 +138,7 @@ def eval_step(params, batch):
   pick_logits, place_logits = TransporterNets().apply({'params': params}, batch['img'], batch['text'])
   return pick_logits, place_logits
 
-def run_cliport(obs, text, coords):
-    before = env.get_camera_image()
-    prev_obs = obs['image'].copy()
 
-    # Tokenize text and get CLIP features.
-    text_tokens = clip.tokenize(text).cuda()
-    with torch.no_grad():
-        text_feats = clip_model.encode_text(text_tokens).float()
-    text_feats /= text_feats.norm(dim=-1, keepdim=True)
-    text_feats = np.float32(text_feats.cpu())
-
-    # Normalize image and add batch dimension.
-    img = obs['image'][None, ...] / 255
-    img = np.concatenate((img, coords[None, ...]), axis=3)
-
-    # Run Transporter Nets to get pick and place heatmaps.
-    batch = {'img': jnp.float32(img), 'text': jnp.float32(text_feats)}
-    pick_map, place_map = eval_step(optim.target, batch)
-    pick_map, place_map = np.float32(pick_map), np.float32(place_map)
-
-    # Get pick position.
-    pick_max = np.argmax(np.float32(pick_map)).squeeze()
-    pick_yx = (pick_max // 224, pick_max % 224)
-    pick_yx = np.clip(pick_yx, 20, 204)
-    pick_xyz = obs['xyzmap'][pick_yx[0], pick_yx[1]]
-
-    # Get place position.
-    place_max = np.argmax(np.float32(place_map)).squeeze()
-    place_yx = (place_max // 224, place_max % 224)
-    place_yx = np.clip(place_yx, 20, 204)
-    place_xyz = obs['xyzmap'][place_yx[0], place_yx[1]]
-
-    # Step environment.
-    act = {'pick': pick_xyz, 'place': place_xyz}
-    obs, _, _, _ = env.step(act)
-
-    # Show pick and place action.
-    plt.title(text)
-    plt.imshow(prev_obs)
-    plt.arrow(pick_yx[1], pick_yx[0], place_yx[1]-pick_yx[1], place_yx[0]-pick_yx[0], color='w', head_starts_at_zero=False, head_width=7, length_includes_head=True)
-    plt.show()
-
-    # Show debug plots.
-    plt.subplot(1, 2, 1)
-    plt.title('Pick Heatmap')
-    plt.imshow(pick_map.reshape(224, 224))
-    plt.subplot(1, 2, 2)
-    plt.title('Place Heatmap')
-    plt.imshow(place_map.reshape(224, 224))
-    plt.show()
-
-    # Show video of environment rollout.
-    # debug_clip = ImageSequenceClip(env.cache_video, fps=25)
-    #   display(debug_clip.ipython_display(autoplay=1, loop=1, center=False))
-    env.cache_video = []
-
-    # Show camera image after pick and place.
-    plt.subplot(1, 2, 1)
-    plt.title('Before')
-    plt.imshow(before)
-    plt.subplot(1, 2, 2)
-    plt.title('After')
-    after = env.get_camera_image()
-    plt.imshow(after)
-    plt.show()
-
-    # return pick_xyz, place_xyz, pick_map, place_map, pick_yx, place_yx
-    return obs
 #@title Helper Functions
 
 def build_scene_description(found_objects, block_name="box", bowl_name="circle"):
@@ -299,6 +232,7 @@ def affordance_scoring(options, found_objects, verbose=False, block_name="box", 
 
 
 if __name__ == "__main__":
+    # initialize environment
     env = PickPlaceEnv()
     config = {'pick':  ['yellow block', 'green block', 'blue block'],
             'place': ['yellow bowl', 'green bowl', 'blue bowl']}
@@ -323,10 +257,10 @@ if __name__ == "__main__":
     plt.imshow(obs['image'])
     plt.show()
 
+    # end of environment initialization
+    # VILD Demo
 
-    config = {'pick':  ['yellow block', 'green block', 'blue block'],
-          'place': ['yellow bowl', 'green bowl', 'blue bowl']}
-
+  
     np.random.seed(42)
     obs = env.reset(config)
     img = env.get_camera_image_top()
@@ -335,6 +269,8 @@ if __name__ == "__main__":
     plt.imshow(img)
     plt.show()
     imageio.imwrite('tmp.jpg', img)
+    # End of VILD Demo
+    
     clip_model, clip_preprocess = clip.load("ViT-B/32")
     clip_model.cuda().eval()
     print("Model parameters:", f"{np.sum([int(np.prod(p.shape)) for p in clip_model.parameters()]):,}")
@@ -457,7 +393,7 @@ if __name__ == "__main__":
     found_objects = vild_obj.vild(image_path, category_name_string, vild_params, plot_on=True, prompt_swaps=prompt_swaps)
     
 
-    dataset, dataset_size = dataset(True)
+    dataset, dataset_size = dataset_load(True)
 
     img = dataset['image'][0]
     pick_yx = dataset['pick_yx'][0]
