@@ -7,7 +7,7 @@ setup(
     author="Yaroslav Savelev",
     author_email="yar21sav@gmail.com",
     packages=["alpaca_connector"],
-    install_requires=["rospy"],
+    install_requires=["rospy", "opencv-contrib-python"],
     license="GNU Lesser General Public License v3",
     classifiers=[
         "Programming Language :: Python",
