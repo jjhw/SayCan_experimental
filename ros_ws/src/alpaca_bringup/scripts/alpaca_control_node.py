@@ -6,7 +6,7 @@ import actionlib
 
 from geometry_msgs.msg import TransformStamped, Pose, Vector3, Quaternion
 from sensor_msgs.msg import JointState
-from wsg_50_common.srv import Move, MoveResponse
+from wsg_50_common.srv import Move, MoveResponse, Conf, ConfResponse
 from std_srvs.srv import Trigger, TriggerResponse, Empty, EmptyResponse
 from ur_dashboard_msgs.srv import IsProgramRunning, IsProgramRunningResponse
 import tf2_ros
@@ -19,7 +19,7 @@ import threading
 import moveit_commander
 import moveit_msgs.msg
 
-gripper_speed = 100 # 420 is max
+gripper_speed = 200 # 420 is max
 
 class Node:
     def __init__(self):
@@ -36,9 +36,15 @@ class Node:
         rospy.wait_for_service("/ur_hardware_interface/dashboard/play")
         rospy.loginfo("robot services ready")
         rospy.loginfo("initializing gripper...")
-        self._gripper_srv = rospy.ServiceProxy("/wsg_50_driver/move", Move)
+        self._gripper_move_srv = rospy.ServiceProxy("/wsg_50_driver/move", Move)
+        self._gripper_grasp_srv = rospy.ServiceProxy("/wsg_50_driver/grasp", Move)
+        self._gripper_release_srv = rospy.ServiceProxy("/wsg_50_driver/release", Move)
+        self._gripper_set_force_srv = rospy.ServiceProxy("/wsg_50_driver/set_force", Conf)
+        self._gripper_set_accel_srv = rospy.ServiceProxy("/wsg_50_driver/set_acceleration", Conf)
         self._gripper_ackn_srv = rospy.ServiceProxy("/wsg_50_driver/ack", Empty)
         rospy.wait_for_service("/wsg_50_driver/move")
+        self._gripper_set_force_srv(15)
+        self._gripper_set_accel_srv(100)
         self.gripper_open()
         rospy.loginfo("gripper initialized")
         rospy.loginfo("running robot program...")
@@ -48,7 +54,7 @@ class Node:
         self.stop()
         sleep(1)
         while not rospy.is_shutdown():
-            rospy.loginfo("waiting for robot to be ready...")
+            rospy.loginfo_throttle(3, "waiting for robot to be ready...")
             self.play()
             if self.is_program_running().program_running:
                 break
@@ -142,12 +148,12 @@ class Node:
     
     def gripper_open(self, req=None):
         self._gripper_ackn_srv()
-        self._gripper_srv(108, gripper_speed)
+        self._gripper_move_srv(105, gripper_speed)
         return TriggerResponse(True, "gripper opened")
     
     def gripper_close(self, req=None):
         self._gripper_ackn_srv()
-        self._gripper_srv(20, gripper_speed)
+        self._gripper_move_srv(5, gripper_speed)
         return TriggerResponse(True, "gripper closed")
     
     def pose_to_camera(self) -> Pose:
@@ -203,7 +209,7 @@ class CameraTFPublisher:
         camera_pos = cv_file.getNode("camera_pos").mat()
         camera_ang = cv_file.getNode("camera_ang").mat()
         if camera_pos is None or camera_ang is None :
-            rospy.logwarn('Calibration file "' + filename + '" doesn\'t exist or corrupted')
+            rospy.logerr('Calibration file "' + filename + '" doesn\'t exist or corrupted')
             return np.zeros((3), dtype=np.float64), np.zeros((4), dtype=np.float64)
         return camera_pos, camera_ang
 

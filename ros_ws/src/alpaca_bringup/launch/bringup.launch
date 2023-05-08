@@ -8,10 +8,15 @@
     </include>
     <!--  launch realsense -->
     <include file="$(find alpaca_bringup)/launch/realsense.launch" >
-        <arg name="output"              value="log"/>
-        <arg name="enable_depth"        value="false"/>
-        <arg name="filters"             value=""/>
-        <arg name="enable_pointcloud"   value="false"/>
+        <arg name="output"              value="screen"/>
+        <arg name="filters"             value="decimation, disparity, spatial, temporal, disparity, hole_filling"/>
+        <!-- <arg name="serial_no"           value=""/> -->
+        <!-- <arg name="device_type"         value="L500"/> -->
+        <arg name="respawn"             value="true"/>
+        <arg name="enable_gyro"         value="false"/>
+        <arg name="enable_accel"        value="false"/>
+        <arg name="initial_reset"        value="true"/> 
+
     </include>
 
     <node name="alpaca_control_node"  pkg="alpaca_bringup" type="alpaca_control_node.py" output="screen" respawn="true">
