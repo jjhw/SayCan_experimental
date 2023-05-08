@@ -4,7 +4,7 @@ EXEC_PATH=$PWD
 
 cd $ROOT_DIR
 
-    docker build -t rt1-img -f $ROOT_DIR/docker/Dockerfile $ROOT_DIR \
+    docker build -t saycan_exp-img -f $ROOT_DIR/docker/Dockerfile $ROOT_DIR \
                                   --network=host \
 
 cd $EXEC_PATH

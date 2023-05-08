@@ -11,10 +11,10 @@ docker run -ti --rm \
       -e "QT_X11_NO_MITSHM=1" \
       -v "/tmp/.X11-unix:/tmp/.X11-unix:rw" \
       -e XAUTHORITY \
-      -e OPENAI_KEY="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" \
+      -e OPENAI_KEY=$OPENAI_KEY \
       -v $ROOT_DIR:/workspace \
       -v $ROOT_DIR/cache:/root/.cache \
       --net=host \
       --privileged \
-      --name rt1_exp rt1-img \
+      --name saycan_exp saycan_exp-img \
       bash

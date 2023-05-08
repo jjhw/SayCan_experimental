@@ -1,4 +1,4 @@
-FROM nvidia/cuda:11.8.0-runtime-ubuntu20.04
+FROM nvidia/cuda:12.1.0-runtime-ubuntu20.04
 
 # Timezone Configuration
 ENV TZ=Europe/Moscow
