@@ -9,6 +9,7 @@
     <arg name="manager"             default="realsense2_camera_manager"/>
     <arg name="output"              default="screen"/>
     <arg name="respawn"             default="false"/>
+    <arg name="global_time_ref"     default="false"/>
 
     <arg name="fisheye_width"       default="-1"/>
     <arg name="fisheye_height"      default="-1"/>
@@ -64,7 +65,7 @@
     <arg name="unite_imu_method"          default=""/>
     <arg name="topic_odom_in"             default="odom_in"/>
     <arg name="calib_odom_file"           default=""/>
-    <arg name="publish_odom_tf"           default="true"/>
+    <arg name="publish_odom_tf"           default="false"/>
     <!-- <arg name="base_frame_id"           default="cam_section_link"/> -->
 
     <arg name="stereo_module/exposure/1"  default="7500"/>

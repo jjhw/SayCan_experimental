@@ -1,4 +1,10 @@
+
 <launch>
+  <!-- <rosparam>
+      /camera/motion_module/global_time_enabled: true
+      /camera/l500_depth_sensor/global_time_enabled: true
+      /camera/rgb_camera/global_time_enabled: true
+  </rosparam> -->
     <arg name="calib_path" default="/workspace/config/camera_pos.yaml"/> 
     <include file="$(find alpaca_bringup)/launch/robot_driver.launch" >
             <arg name="use_gripper" value="true"/>
@@ -9,13 +15,11 @@
     <!--  launch realsense -->
     <include file="$(find alpaca_bringup)/launch/realsense.launch" >
         <arg name="output"              value="screen"/>
-        <arg name="filters"             value="decimation, disparity, spatial, temporal, disparity, hole_filling"/>
-        <!-- <arg name="serial_no"           value=""/> -->
-        <!-- <arg name="device_type"         value="L500"/> -->
+        <arg name="filters"             value="decimation, disparity, spatial, temporal, disparity, hole_filling"/> 
         <arg name="respawn"             value="true"/>
         <arg name="enable_gyro"         value="false"/>
         <arg name="enable_accel"        value="false"/>
-        <arg name="initial_reset"        value="true"/> 
+        <!-- <arg name="initial_reset"        value="true"/>     -->
 
     </include>
 
