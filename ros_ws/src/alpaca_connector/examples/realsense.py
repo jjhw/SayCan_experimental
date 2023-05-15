@@ -41,7 +41,7 @@ if __name__ == "__main__":
     cv2.setMouseCallback("depth", mouse_callback)
     while not ac.is_shutdown():
         color, depth_map, _camera_info = ac.wait_for_image()
-        depth = normalize_depth(depth_map, 930, 980)
+        depth = normalize_depth(depth_map, 900, 1000)
         cv2.imshow("color", color)
         cv2.imshow("depth", depth)
         if cv2.waitKey(1) & 0xFF == ord('q'):
