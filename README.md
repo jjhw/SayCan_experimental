@@ -24,6 +24,7 @@ you are able to open a new terminal session inside docker container with the fol
 ```bash
 docker/into_docker.sh
 ```
+roslaunch ur_calibration calibration_correction.launch robot_ip:=<robot ip> target_filename:=/workspace/ros_ws/src/alpaca_moveit_config/stand_model/kinematics.yaml
 
 ## Camera calibration
 For the correct work of the project, you need to calibrate the camera extrinsics.  
